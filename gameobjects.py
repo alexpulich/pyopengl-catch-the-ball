@@ -1,10 +1,13 @@
-from OpenGL.GL import *
-import numpy as np
-from utils import Textureloader
-from pyrr import matrix44, matrix33, Vector3
-import glfw
 import random
+
+from OpenGL.GL import *
+import glfw
+
+import numpy as np
+from pyrr import matrix44, matrix33, Vector3
+
 from primitives import Cube, Sphere
+from utils import Textureloader
 
 
 class SphereGameObject(Sphere):
@@ -77,7 +80,6 @@ class SphereGameObject(Sphere):
 
 
 class Ball(SphereGameObject):
-
     INITIAL_SPEED = 0.02
     speed = INITIAL_SPEED
 
@@ -260,25 +262,6 @@ class Platform(CubeGameObject):
         if self.curr_movement == self.LEFT and self.pos[0] >= -5.0 or \
                                 self.curr_movement == self.RIGHT and self.pos[0] <= 5.0:
             self.pos[0] = self.pos[0] + self.curr_movement * glfw.get_time() * self.STEP
-
-
-class Item(CubeGameObject):
-    INITIAL_SPEED = 0.02
-    speed = INITIAL_SPEED
-
-    def __init__(self, texture_path):
-        super().__init__(texture_path, self.random_pos())
-
-    def random_pos(self):
-        self.pos = [random.uniform(-5, 5), 6.1, 0.0]
-
-    def draw(self, move=True):
-        if move:
-            self.move()
-        super().draw()
-
-    def move(self):
-        self.pos[1] = self.pos[1] - self.speed
 
 
 class Background(CubeGameObject):
