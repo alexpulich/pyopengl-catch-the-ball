@@ -1,78 +1,86 @@
+"""
+This module implements basiс objects (e.g. sphere, cube) as sets of vertices and indices
+which are used for polygon meshes.
+"""
 import math
 import numpy as np
 
 
 class Sphere:
-
+    """ Simple sphere """
     RAD = 0.5
     vertices = []
     indices = []
 
     def __init__(self):
         rad = self.RAD
-        indicesCnt = 0
+        indices_cnt = 0
 
         divisions = 180
-        dTheta = int(180 / divisions)
-        dLon = int(360 / divisions)
-        degToRad = math.pi / 180
+        d_theta = int(180 / divisions)
+        d_lon = int(360 / divisions)
+        deg_to_rad = math.pi / 180
 
-        for lat in range(0, 181, dTheta):
-            for lon in range(0, 361, dLon):
+        for lat in range(0, 181, d_theta):
+            for lon in range(0, 361, d_lon):
                 # Vertex1
-                x = rad * math.cos(lon * degToRad) * math.sin(lat * degToRad)
-                y = rad * math.sin(lon * degToRad) * math.sin(lat * degToRad)
-                z = rad * math.cos(lat * degToRad)
+                x = rad * math.cos(lon * deg_to_rad) * math.sin(lat * deg_to_rad)
+                y = rad * math.sin(lon * deg_to_rad) * math.sin(lat * deg_to_rad)
+                z = rad * math.cos(lat * deg_to_rad)
                 self.vertices.append(x)
                 self.vertices.append(y)
                 self.vertices.append(z)
                 self.vertices.append(lon / 360 - 0.25)
                 self.vertices.append(lat / 180)
-                self.indices.append(indicesCnt)
-                indicesCnt += 1
+                self.indices.append(indices_cnt)
+                indices_cnt += 1
 
                 # vertex2
-                x = rad * math.cos(lon * degToRad) * math.sin((lat + dTheta) * degToRad)
-                y = rad * math.sin(lon * degToRad) * math.sin((lat + dTheta) * degToRad)
-                z = rad * math.cos((lat + dTheta) * degToRad)
+                x = rad * math.cos(lon * deg_to_rad) * math.sin((lat + d_theta) * deg_to_rad)
+                y = rad * math.sin(lon * deg_to_rad) * math.sin((lat + d_theta) * deg_to_rad)
+                z = rad * math.cos((lat + d_theta) * deg_to_rad)
                 self.vertices.append(x)
                 self.vertices.append(y)
                 self.vertices.append(z)
                 self.vertices.append(lon / 360 - 0.25)
-                self.vertices.append((lat + dTheta - 1) / 180)
-                self.indices.append(indicesCnt)
-                indicesCnt += 1
+                self.vertices.append((lat + d_theta - 1) / 180)
+                self.indices.append(indices_cnt)
+                indices_cnt += 1
+
                 # vertex3
-                x = rad * math.cos((lon + dLon) * degToRad) * math.sin(lat * degToRad)
-                y = rad * math.sin((lon + dLon) * degToRad) * math.sin(lat * degToRad)
-                z = rad * math.cos(lat * degToRad)
+                x = rad * math.cos((lon + d_lon) * deg_to_rad) * math.sin(lat * deg_to_rad)
+                y = rad * math.sin((lon + d_lon) * deg_to_rad) * math.sin(lat * deg_to_rad)
+                z = rad * math.cos(lat * deg_to_rad)
                 self.vertices.append(x)
                 self.vertices.append(y)
                 self.vertices.append(z)
-                self.vertices.append((lon + dLon) / 360 - 0.25)
+                self.vertices.append((lon + d_lon) / 360 - 0.25)
                 self.vertices.append(lat / 180)
-                self.indices.append(indicesCnt)
-                indicesCnt += 1
+                self.indices.append(indices_cnt)
+                indices_cnt += 1
 
                 # vertex4
-                x = rad * math.cos((lon + dLon) * degToRad) * math.sin((lat + dTheta) * degToRad)
-                y = rad * math.sin((lon + dLon) * degToRad) * math.sin((lat + dTheta) * degToRad)
-                z = rad * math.cos((lat + dTheta) * degToRad)
+                x = rad * math.cos((lon + d_lon) * deg_to_rad) * math.sin((lat + d_theta) * deg_to_rad)
+                y = rad * math.sin((lon + d_lon) * deg_to_rad) * math.sin((lat + d_theta) * deg_to_rad)
+                z = rad * math.cos((lat + d_theta) * deg_to_rad)
                 self.vertices.append(x)
                 self.vertices.append(y)
                 self.vertices.append(z)
-                self.vertices.append((lon + dLon) / 360 - 0.25)
-                self.vertices.append((lat + dTheta) / 180)
-                self.indices.append(indicesCnt)
-                indicesCnt += 1
+                self.vertices.append((lon + d_lon) / 360 - 0.25)
+                self.vertices.append((lat + d_theta) / 180)
+                self.indices.append(indices_cnt)
+                indices_cnt += 1
 
         self.vertices = np.array(self.vertices, dtype=np.float32)
         self.indices = np.array(self.indices, dtype=np.uint32)
 
 
 class Cube:
+    """ Simple cube """
+
     def __init__(self):
         self.vertices = np.array([
+            # format: x, y, z, texture_x, texture_y
             -0.5, -0.5, 0.5, 0.0, 0.0,
             0.5, -0.5, 0.5, 1.0, 0.0,
             0.5, 0.5, 0.5, 1.0, 1.0,
