@@ -1,8 +1,10 @@
 #version 330
+
 in vec2 textures;
 
-out vec4 color;
 uniform sampler2D tex_sampler;
+
+out vec4 color;
 
 void main()
 {

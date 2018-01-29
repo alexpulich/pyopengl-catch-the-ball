@@ -60,22 +60,22 @@ class Window:
         glEnable(GL_DEPTH_TEST)
 
         self.ball = Ball('resources/tkan.jpg')
-        ball_shader = Shader('shaders/vs.shader', 'shaders/fs.shader')
+        ball_shader = Shader('shaders/base.vs', 'shaders/base.fs')
         self.ball.prep(ball_shader, aspect_ratio, 0.5, 85)
 
         self.platform = Platform('resources/yachik3.jpg')
-        shader = Shader('shaders/vs.shader', 'shaders/fs.shader')
+        shader = Shader('shaders/base.vs', 'shaders/base.fs')
         self.platform.prep(shader, aspect_ratio, 1.0, 85)
 
         self.hearts = []
         for i in range(0, self.MAX_FAIL):
             heart = Heart([-3.0 + i * 0.5, 5.5, 0.0])
-            heart_shader = Shader('shaders/vs', 'shaders/fs')
+            heart_shader = Shader('shaders/heart.vs', 'shaders/heart.fs')
             heart.prep(heart_shader, aspect_ratio, 0.3, 85)
             self.hearts.append(heart)
 
         self.bg = Background('resources/bg-doski.jpg')
-        bg_shader = Shader('shaders/vs.shader', 'shaders/fs.shader')
+        bg_shader = Shader('shaders/base.vs', 'shaders/base.fs')
         self.bg.prep(bg_shader, aspect_ratio, 11.0, 85)
 
         while not glfw.window_should_close(window):
