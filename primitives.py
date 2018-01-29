@@ -120,3 +120,28 @@ class Cube:
             16, 17, 18, 18, 19, 16,
             20, 21, 22, 22, 23, 20
         ], dtype=np.uint32)
+
+
+class Heart:
+    """ Simple rough heart """
+
+    def __init__(self):
+        self.vertices = np.array([
+            # format: x, y, z
+            0.0, -0.8, 0.0,
+
+            -0.6, 0.1, 0.0,
+            -0.3, 0.6, 0.0,
+
+            0.0, 0.4, 0.0,
+
+            0.3, 0.6, 0.0,
+            0.6, 0.1, 0.0
+        ], dtype=np.float32)
+
+        self.indices = np.array([
+            0, 1, 2,
+            2, 0, 3,
+            3, 4, 0,
+            0, 5, 4,
+        ], dtype=np.uint32)
