@@ -17,8 +17,18 @@ Install all the dependencies from requirements.txt using pip.
 pip install -r requirements.txt
 ```
 
+## Playing
+
 To run the game execute following command
 
 ```
 python main.py
+```
+
+### Controls
+
+```
+SPACE - start new game
+A - move left
+D - move right
 ```
