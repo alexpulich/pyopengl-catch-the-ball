@@ -59,11 +59,11 @@ class Window:
         glClearColor(0.2, 0.3, 0.2, 1.0)
         glEnable(GL_DEPTH_TEST)
 
-        self.ball = Ball('resources/tkan.jpg')
+        self.ball = Ball('resources/textile.jpg')
         ball_shader = Shader('shaders/base.vs', 'shaders/base.fs')
         self.ball.prep(ball_shader, aspect_ratio, 0.5, 85)
 
-        self.platform = Platform('resources/yachik3.jpg')
+        self.platform = Platform('resources/bucket.jpg')
         shader = Shader('shaders/base.vs', 'shaders/base.fs')
         self.platform.prep(shader, aspect_ratio, 1.0, 85)
 
@@ -74,7 +74,7 @@ class Window:
             heart.prep(heart_shader, aspect_ratio, 0.3, 85)
             self.hearts.append(heart)
 
-        self.bg = Background('resources/bg-doski.jpg')
+        self.bg = Background('resources/wood.jpg')
         bg_shader = Shader('shaders/base.vs', 'shaders/base.fs')
         self.bg.prep(bg_shader, aspect_ratio, 11.0, 85)
 
