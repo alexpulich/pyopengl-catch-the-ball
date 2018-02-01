@@ -3,25 +3,35 @@ import random
 from OpenGL.GL import *
 import glfw
 
-import numpy as np
 from pyrr import matrix44, matrix33, Vector3
 
-from primitives import Cube, Sphere
+from primitives import Cube, Sphere, Heart
 from utils import Textureloader
 
 
+PROJECTION_NEAR = 0.1
+PROJECTION_FAR = 100.0
+
+DEFAULT_VIEW = [0.0, -2.5, -8.0]
+
+
 class SphereGameObject(Sphere):
+    """ Implements OpenGL sphere object """
     VAO = None
     VBO = None
     EBO = None
 
+    # initial position
     pos = [2.0, 0.0, 0.0]
+
+    # initial scale
     scale = 0.5
 
     shader = None
     texture = None
 
     def __init__(self, texture_path=None, pos=None):
+        """ Creates and binds buffers, sets initial position of the object, loads and binds texture """
         super().__init__()
 
         self.VAO = glGenVertexArrays(1)
@@ -40,33 +50,34 @@ class SphereGameObject(Sphere):
         glEnableVertexAttribArray(0)
 
         # textures
-        if (texture_path):
+        if texture_path:
             glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, self.vertices.itemsize * 5, ctypes.c_void_p(12))
             glEnableVertexAttribArray(1)
-            self.texture = Textureloader.load_texture(texture_path)
+            self.texture = Textureloader.load(texture_path)
 
         if pos:
             self.pos = pos
 
     def prep(self, shader, aspect_ratio, scale_val=None, angle=90.0):
-        print(aspect_ratio)
+        """ Sets object's shader and enables it, sets scale and computes view and projection matrices """
         self.shader = shader
         self.shader.use()
 
         if scale_val:
             self.scale = scale_val
 
-        view = matrix44.create_from_translation(Vector3([0.0, -2.5, -8.0]))
-        self.shader.setMat4('view', view)
+        view = matrix44.create_from_translation(Vector3(DEFAULT_VIEW))
+        self.shader.set_mat4('view', view)
 
-        projection = matrix44.create_perspective_projection_matrix(angle, aspect_ratio, 0.1, 100.0)
-        self.shader.setMat4('projection', projection)
+        projection = matrix44.create_perspective_projection_matrix(angle, aspect_ratio, PROJECTION_NEAR, PROJECTION_FAR)
+        self.shader.set_mat4('projection', projection)
 
         scale = matrix33.create_from_scale(Vector3([self.scale, self.scale, self.scale]))
         scale = matrix44.create_from_matrix33(scale)
-        self.shader.setMat4('scale', scale)
+        self.shader.set_mat4('scale', scale)
 
     def draw(self):
+        """ Draws the object """
         self.shader.use()
 
         glBindVertexArray(self.VAO)
@@ -75,11 +86,12 @@ class SphereGameObject(Sphere):
 
         model = matrix44.create_from_translation(Vector3(self.pos))
         glBindTexture(GL_TEXTURE_2D, self.texture)
-        self.shader.setMat4('model', model)
+        self.shader.set_mat4('model', model)
         glDrawElements(GL_LINE_LOOP, len(self.indices), GL_UNSIGNED_INT, None)
 
 
 class Ball(SphereGameObject):
+    """ Implements falling ball object """
     INITIAL_SPEED = 0.02
     speed = INITIAL_SPEED
 
@@ -95,36 +107,25 @@ class Ball(SphereGameObject):
         super().draw()
 
     def move(self):
+        """ Move objects along y axis with constant speed"""
         self.pos[1] = self.pos[1] - self.speed
 
 
-class Heart:
+class LiveHeart(Heart):
+    """ Implements OpenGL heart objects (show player's lifes"""
+    VAO = None
+    VBO = None
+    EBO = None
+
+    # initial scale
     scale = 1.0
+
     shader = None
 
     def __init__(self, pos):
-        self.vertices = []
-        self.indices = []
+        super().__init__()
+
         self.pos = pos
-        self.vertices = [
-            0.0, -0.8, 0.0,
-
-            -0.6, 0.1, 0.0,
-            -0.3, 0.6, 0.0,
-
-            0.0, 0.4, 0.0,
-
-            0.3, 0.6, 0.0,
-            0.6, 0.1, 0.0
-        ]
-        self.indices = [
-            0, 1, 2,
-            2, 0, 3,
-            3, 4, 0,
-            0, 5, 4,
-        ]
-        self.vertices = np.array(self.vertices, dtype=np.float32)
-        self.indices = np.array(self.indices, dtype=np.uint32)
 
         self.VAO = glGenVertexArrays(1)
         glBindVertexArray(self.VAO)
@@ -148,15 +149,15 @@ class Heart:
         if scale_val:
             self.scale = scale_val
 
-        view = matrix44.create_from_translation(Vector3([0.0, -2.5, -8.0]))
-        self.shader.setMat4('view', view)
+        view = matrix44.create_from_translation(Vector3(DEFAULT_VIEW))
+        self.shader.set_mat4('view', view)
 
-        projection = matrix44.create_perspective_projection_matrix(angle, aspect_ratio, 0.1, 100.0)
-        self.shader.setMat4('projection', projection)
+        projection = matrix44.create_perspective_projection_matrix(angle, aspect_ratio, PROJECTION_NEAR, PROJECTION_FAR)
+        self.shader.set_mat4('projection', projection)
 
         scale = matrix33.create_from_scale(Vector3([self.scale, self.scale, self.scale]))
         scale = matrix44.create_from_matrix33(scale)
-        self.shader.setMat4('scale', scale)
+        self.shader.set_mat4('scale', scale)
 
     def draw(self):
         self.shader.use()
@@ -167,7 +168,7 @@ class Heart:
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, self.EBO)
 
         model = matrix44.create_from_translation(Vector3(self.pos))
-        self.shader.setMat4('model', model)
+        self.shader.set_mat4('model', model)
         glDrawElements(GL_TRIANGLES, len(self.indices), GL_UNSIGNED_INT, None)
 
 
@@ -204,7 +205,7 @@ class CubeGameObject(Cube):
         if (texture_path):
             glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, self.vertices.itemsize * 5, ctypes.c_void_p(12))
             glEnableVertexAttribArray(1)
-            self.texture = Textureloader.load_texture(texture_path)
+            self.texture = Textureloader.load(texture_path)
 
         if pos:
             self.pos = pos
@@ -216,15 +217,15 @@ class CubeGameObject(Cube):
         if scale_val:
             self.scale = scale_val
 
-        view = matrix44.create_from_translation(Vector3([0.0, -2.5, -8.0]))
-        self.shader.setMat4('view', view)
+        view = matrix44.create_from_translation(Vector3(DEFAULT_VIEW))
+        self.shader.set_mat4('view', view)
 
-        projection = matrix44.create_perspective_projection_matrix(angle, aspect_ratio, 0.1, 100.0)
-        self.shader.setMat4('projection', projection)
+        projection = matrix44.create_perspective_projection_matrix(angle, aspect_ratio, PROJECTION_NEAR, PROJECTION_FAR)
+        self.shader.set_mat4('projection', projection)
 
         scale = matrix33.create_from_scale(Vector3([self.scale, self.scale, self.scale]))
         scale = matrix44.create_from_matrix33(scale)
-        self.shader.setMat4('scale', scale)
+        self.shader.set_mat4('scale', scale)
 
     def draw(self):
         self.shader.use()
@@ -235,7 +236,7 @@ class CubeGameObject(Cube):
 
         model = matrix44.create_from_translation(Vector3(self.pos))
         glBindTexture(GL_TEXTURE_2D, self.texture)
-        self.shader.setMat4('model', model)
+        self.shader.set_mat4('model', model)
         glDrawElements(GL_TRIANGLES, len(self.indices), GL_UNSIGNED_INT, None)
 
 

@@ -1,7 +1,18 @@
 from OpenGL.GL import *
 import glfw
-from gameobjects import Platform, Background, Ball, Heart
+
+from gameobjects import Platform, Background, Ball, LiveHeart
 from shader import Shader
+
+TEXTILE_TEXTURE = 'resources/textile.jpg'
+BUCKET_TEXTURE = 'resources/bucket.jpg'
+WOOD_TEXTURE = 'resources/wood.jpg'
+
+BASE_VS = 'shaders/base.vs'
+BASE_FS = 'shaders/base.fs'
+
+HEART_VS = 'shaders/heart.vs'
+HEART_FS = 'shaders/heart.fs'
 
 
 class Window:
@@ -13,7 +24,8 @@ class Window:
     fails = 0
     score = 0
 
-    def reshape(self, window, width, height):
+    def reshape(self, window):
+        """Window size callback. Redraw game objects"""
         angle = 85
         width, height = glfw.get_framebuffer_size(window)
         aspect_ratio = width / height
@@ -26,7 +38,6 @@ class Window:
         for i in range(0, self.MAX_FAIL):
             self.hearts[i].shader.use()
             self.hearts[i].prep(self.hearts[i].shader, aspect_ratio, 0.3, angle)
-
 
         self.bg.shader.use()
         self.bg.prep(self.bg.shader, aspect_ratio, 11.0, angle)
@@ -55,27 +66,26 @@ class Window:
         glViewport(0, 0, width, height)
         aspect_ratio = width / height
 
-
         glClearColor(0.2, 0.3, 0.2, 1.0)
         glEnable(GL_DEPTH_TEST)
 
-        self.ball = Ball('resources/textile.jpg')
-        ball_shader = Shader('shaders/base.vs', 'shaders/base.fs')
+        self.ball = Ball(TEXTILE_TEXTURE)
+        ball_shader = Shader(BASE_VS, BASE_FS)
         self.ball.prep(ball_shader, aspect_ratio, 0.5, 85)
 
-        self.platform = Platform('resources/bucket.jpg')
-        shader = Shader('shaders/base.vs', 'shaders/base.fs')
+        self.platform = Platform(BUCKET_TEXTURE)
+        shader = Shader(BASE_VS, BASE_FS)
         self.platform.prep(shader, aspect_ratio, 1.0, 85)
 
         self.hearts = []
         for i in range(0, self.MAX_FAIL):
-            heart = Heart([-3.0 + i * 0.5, 5.5, 0.0])
-            heart_shader = Shader('shaders/heart.vs', 'shaders/heart.fs')
+            heart = LiveHeart([-3.0 + i * 0.5, 5.5, 0.0])
+            heart_shader = Shader(HEART_VS, HEART_FS)
             heart.prep(heart_shader, aspect_ratio, 0.3, 85)
             self.hearts.append(heart)
 
-        self.bg = Background('resources/wood.jpg')
-        bg_shader = Shader('shaders/base.vs', 'shaders/base.fs')
+        self.bg = Background(WOOD_TEXTURE)
+        bg_shader = Shader(BASE_VS, BASE_FS)
         self.bg.prep(bg_shader, aspect_ratio, 11.0, 85)
 
         while not glfw.window_should_close(window):
@@ -143,6 +153,7 @@ class Window:
                 self.hearts[self.MAX_FAIL - self.fails].pos[1] = 20.0
             return True
         return False
+
 
 if __name__ == '__main__':
     app = Window()
