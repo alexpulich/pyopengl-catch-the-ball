@@ -118,16 +118,10 @@ class Window:
         if key == glfw.KEY_SPACE and action == glfw.PRESS:
             self.reset_game(self.ball)
 
-        if key == glfw.KEY_A:
+        if key == glfw.KEY_A or key == glfw.KEY_D:
             if action == glfw.PRESS:
                 glfw.set_time(0)
-                self.platform.curr_movement = self.platform.LEFT
-            elif action == glfw.RELEASE:
-                self.platform.curr_movement = self.platform.STOP
-        if key == glfw.KEY_D:
-            if action == glfw.PRESS:
-                glfw.set_time(0)
-                self.platform.curr_movement = self.platform.RIGHT
+                self.platform.curr_movement = self.platform.LEFT if key == glfw.KEY_A else self.platform.LEFT
             elif action == glfw.RELEASE:
                 self.platform.curr_movement = self.platform.STOP
 
